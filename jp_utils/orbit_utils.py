@@ -5,6 +5,7 @@ different coordinates, etc.
 """
 
 import numpy as np
+from jp_utils.general import *
 from jp_utils.constants.earth import *
 
 def calc_energy(state_vector):
@@ -42,23 +43,27 @@ def cartesian_to_keplerian(state):
 
     h = np.cross(pos, vel)
 
-    ecc_vec = np.cross(vel, h) / MU - (pos / norm(pos))
-    ecc = norm(ecc_vec)
+    ecc_vec = np.cross(vel, h) / MU - (pos / vec_mag(pos))
 
     n = np.cross([0,0,1], h)
 
-    inc = np.arccos(h[2]/norm(h))
+    ecc = vec_mag(ecc_vec)
 
-    ran = np.arccos(n[0]/norm(n))
+    inc = np.arccos(h[2]/vec_mag(h))
 
-    aop = np.arccos(np.dot(n,ecc_vec) / (norm(n) * ecc))
+    ran = np.arccos(n[0]/vec_mag(n))
 
-    sma = 1 / (2/norm(pos) - norm(vel)**2/MU)
+    aop = np.arccos(np.dot(n,ecc_vec) / (vec_mag(n) * ecc))
+
+    sma = 1 / (2/vec_mag(pos) - vec_mag(vel)**2/MU)
+
+    tam = np.arccos(np.dot(ecc_vec, pos) / (ecc * vec_mag(pos)))
 
     return {
         'inc' : inc,
         'ecc' : ecc,
         'ran' : ran,
         'aop' : aop,
-        'sma' : sma
+        'sma' : sma,
+        'tam' : tam,
     }
